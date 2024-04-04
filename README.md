@@ -7,8 +7,8 @@ Aufteilung:
 - Pdf auslesen und in json-Datei kopieren 
 
 Zusatz: 
-- GUI hinzufügen, Vorschlag: CLI und/oder Website. 
-
+- GUI hinzufügen, Vorschlag: CLI und/oder Website.
+- Logging hinzufügen
 
 Installation: 
 libraries installieren: os, requests, bs4, urllib.parse
