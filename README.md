@@ -8,3 +8,10 @@ Aufteilung:
 
 Zusatz: 
 - GUI hinzufügen, Vorschlag: CLI und/oder Website. 
+
+
+Installation: 
+libraries installieren: os, requests, bs4, urllib.parse
+
+pip3 install requests
+pip3 install bs4
