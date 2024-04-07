@@ -13,5 +13,8 @@ Zusatz:
 Installation: 
 libraries installieren: os, requests, bs4, urllib.parse
 
-pip3 install requests
-pip3 install bs4
+pdf-download:
+- pip3 install requests
+- pip3 install bs4
+
+(pdf-extraction: - pip3 install PyMuPDF)

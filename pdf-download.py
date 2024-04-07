@@ -1,4 +1,4 @@
-# This python program downloads the pdf-file to the local folder 'pdf-files'
+# This python program downloads the PDF-file to the local folder 'pdf-files'
 
 import os
 import requests
@@ -8,15 +8,16 @@ from urllib.parse import urljoin
 # Set the Url of the main Website 
 url = "https://swgdrug.org/monographs.htm"
 
-# Create an Array with urls of every single pdf 
+# Create an Array with urls of every PDF 
 fileUrls = []
 
-# Print every pdf-Url in CLI
+# Print every PDF-Url in CLI
 def print_all_html_filelinks():
     for url in fileUrls: 
         print(url)
 
-# Get all pdf links from Website url and save them in 'fileUrls'
+
+# Get all PDF links from Website url and save them in 'fileUrls'
 def get_all_pdf_links():
     # Url Requests to get the Website as response object
     # verify=False because of an SSL Error with the specific website 
@@ -30,10 +31,11 @@ def get_all_pdf_links():
         # append then to 'fileUrls' array
         fileUrls.append(urljoin(url,link['href']))
 
-# download pdf into folder (with pdf link e.g. 'https://swgdrug.org/Monographs/A04%20HCl.pdf')
+
+# download PDF into folder (with PDF link e.g. 'https://swgdrug.org/Monographs/A04%20HCl.pdf')
 def download_pdf_files(fileUrl):
     
-    # Create folder for pdf-files if there is no such folder
+    # Create folder pdf-files if there is no such folder
     # TODO try under WINDOWS 
     folder_location = r'pdf-files'
     if not os.path.exists(folder_location):os.mkdir(folder_location)
@@ -50,7 +52,7 @@ def download_pdf_files(fileUrl):
         # Save in current working directory
         filepath = os.path.join(folder_location, pdf_file_name)
         with open(filepath, 'wb') as pdf_object:
-            # save pdf file byte wise with '.content'
+            # save PDF file byte wise with '.content'
             pdf_object.write(response.content)
             # positive feedback 
             print(pdf_file_name, ' successfully downloaded in directory.')
@@ -59,9 +61,31 @@ def download_pdf_files(fileUrl):
         print('This file could not be downloaded: ', pdf_file_name)
         print('HTTP response status code: ',response.status_code)
 
-# main: function calling
-get_all_pdf_links()
+# -------- main ---------
+# get every Link and download all PDFs into local folder: 
+def main():
+    get_all_pdf_links()
+    for url in fileUrls:
+        download_pdf_files(url)
 
-# download every pdf into folder
-for url in fileUrls:
-    download_pdf_files(url)
+
+# -- uncomment the following to make it work --
+
+# if __name__ == "__main__":
+#     main()
+
+# -- or -- 
+
+# main()
+
+
+# --------- dev-tools ----------
+# Print all links and total number:
+# print_all_html_filelinks()
+# print(len(fileUrls))
+
+# Download 4 example files:
+# import random
+# for i in range(0,4):
+#     tmp = random.randint(0,len(fileUrls))
+#     download_pdf_files(fileUrls[tmp])    
