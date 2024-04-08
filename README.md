@@ -2,18 +2,20 @@
 Webscraper for pdf-data extraction
 
 Aufteilung: 
-- json Datei-Vorlage erstellen 
-- Pdf herunterladen
-- Pdf auslesen und in json-Datei kopieren 
+- PDF in json (Teil 1) (Nathaniel)
+- Json prüfen der Daten (Teil 2: validation) (Tatiana)
+- Regelmäßig (Teil 3: Website Neuerungen überprüfen) (Nathaniel)
+- Logging (Nathaniel)
+- GUI / Suchmaschine (Teil 4) CLI und GUI (Tatiana)
+- Import aus anderen Gruppen 
 
-Zusatz: 
-- GUI hinzufügen, Vorschlag: CLI und/oder Website.
-- Logging hinzufügen
 
 Installation: 
-libraries installieren: os, requests, bs4, urllib.parse
+libraries: 
+pdf-download.py: os, requests, bs4, urllib.parse
+validation-data.py:  
 
-pdf-download:
+
 - pip3 install requests
 - pip3 install bs4
 
