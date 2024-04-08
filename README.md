@@ -11,8 +11,10 @@ Aufteilung:
 
 
 Installation: 
-libraries: 
+libraries:
+
 pdf-download.py: os, requests, bs4, urllib.parse
+
 validation-data.py:  
 
 
