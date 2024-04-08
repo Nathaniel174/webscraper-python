@@ -1,15 +1,20 @@
 # This python program downloads the PDF-file to the local folder 'pdf-files'
 
 import os
+from os import listdir
+from os.path import isfile , join 
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+
+import random
 
 # Set the Url of the main Website 
 url = "https://swgdrug.org/monographs.htm"
 
 # Create an Array with urls of every PDF 
 fileUrls = []
+filePaths = []
 
 # Print every PDF-Url in CLI
 def print_all_html_filelinks():
@@ -56,10 +61,16 @@ def download_pdf_files(fileUrl):
             pdf_object.write(response.content)
             # positive feedback 
             print(pdf_file_name, ' successfully downloaded in directory.')
+            
+        filePaths.append(filepath)
     else:
         # negative feedback
         print('This file could not be downloaded: ', pdf_file_name)
         print('HTTP response status code: ',response.status_code)
+
+
+# cut PDF-file that only first page exists 
+
 
 # -------- main ---------
 # get every Link and download all PDFs into local folder: 
@@ -80,12 +91,15 @@ def main():
 
 
 # --------- dev-tools ----------
-# Print all links and total number:
+#
 # print_all_html_filelinks()
 # print(len(fileUrls))
-
+get_all_pdf_links()
+#
 # Download 4 example files:
-# import random
-# for i in range(0,4):
-#     tmp = random.randint(0,len(fileUrls))
-#     download_pdf_files(fileUrls[tmp])    
+for i in range(0,4):
+    tmp = random.randint(0,len(fileUrls))
+    download_pdf_files(fileUrls[tmp])
+print(filePaths)
+    
+# get_all_pdf_paths()
