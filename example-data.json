@@ -1,16 +1,17 @@
 [
     {
-        "names": [""],
-        "iupac_name": "",
-        "id": "",
-        "formula": "",
-        "molecular_weight": "",
-        "category_tag": "",
-        "inchi": "",
-        "inchi_key": "",
-        "smiles": "",
-        "url": "",
-        "timestamp": "2024-03-26 22:04:28.910722"
-    },
-    "next element"
+        "names" : "", 
+        "iupac_name" : "",
+        "CAS" : "",
+        "appearance" : "",
+        "base_formular" : "",
+        "base_molecular_weight" : "",
+        "base_melting_point" : "",
+        "HCl_formular" : "",
+        "HCl_molecular_weight" : "",
+        "HCl_melting_point" : "",
+        "smiles" : "",
+        "url" : "",
+        "timestamp" : ""
+    }
 ]
