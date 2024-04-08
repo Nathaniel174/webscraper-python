@@ -1,9 +1,14 @@
 # This python program downloads the PDF-file to the local folder 'pdf-files'
 
+# TODO: nur erste Seite runterladen 
+
 import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+
+# for random 4 PDF-files
+# import random
 
 # Set the Url of the main Website 
 url = "https://swgdrug.org/monographs.htm"
@@ -81,11 +86,11 @@ def main():
 
 # --------- dev-tools ----------
 # Print all links and total number:
+# get_all_pdf_links()
 # print_all_html_filelinks()
 # print(len(fileUrls))
 
 # Download 4 example files:
-# import random
 # for i in range(0,4):
 #     tmp = random.randint(0,len(fileUrls))
 #     download_pdf_files(fileUrls[tmp])    
