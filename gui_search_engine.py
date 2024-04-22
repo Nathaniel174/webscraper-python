@@ -5,25 +5,51 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushBut
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Suchmaschine für Designerdrogen')
-        self.setMinimumSize(350, 200)
+        self.setWindowTitle('Suchmaschine für Designerdrogen') # Set window title
+        self.setMinimumSize(350, 200) # Set minimum window size
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
+        self.result_label = QLabel()
 
+        # Creating a label widget with text 'Ich suche...'
         title_label = QLabel('Ich suche...', central_widget)
 
         layout = QFormLayout(central_widget)
-        layout.addRow(title_label) 
-        layout.addRow('SMILES', QLineEdit())
-        layout.addRow('Formel', QLineEdit())
-        layout.addRow('Masse', QLineEdit())
+        layout.addRow(title_label)
+        # Add a line edit widget for SMILES
+        self.smiles_field = QLineEdit()
+        layout.addRow('SMILES', self.smiles_field)
+        # Add a line edit widget for Formel
+        self.formel_field = QLineEdit()
+        layout.addRow('Formel', self.formel_field)
+        # Add a line edit widget for Masse
+        self.masse_field = QLineEdit()
+        layout.addRow('Masse', self.masse_field)
 
         search_button = QPushButton('Suchen', central_widget)
         clear_button = QPushButton('Löschen', central_widget)
+        # Connect search button to on_button_click method
+        search_button.clicked.connect(self.on_button_click)
+        # Connect clear button to clear_fields method
+        clear_button.clicked.connect(self.clear_fields)
         layout.addRow(search_button, clear_button)
+        layout.addWidget(self.result_label)
+   
+    #Function to handle the click event of the 'Suchen' button.
+    #It retrieves the text from the input fields, constructs a message, and sets it as the text of the result label.
+    def on_button_click(self):
+        smiles = self.smiles_field.text()
+        formel = self.formel_field.text()
+        masse = self.masse_field.text()
+        self.result_label.setText(f'Ich suche Substanzen mit SMILES {smiles}, Formel {formel} und Masse {masse}')
 
-
-        
+    # Function to handle the click event of the 'Löschen' button.
+    # It clears the text from all input fields and the result label.
+    def clear_fields(self):
+        self.smiles_field.clear()
+        self.formel_field.clear()
+        self.masse_field.clear()
+        self.result_label.clear()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
