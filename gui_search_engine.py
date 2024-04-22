@@ -1,17 +1,36 @@
+import json
 import sys
-from PyQt6.QtWidgets import QApplication, QDialog
-from ui_gui_app import Ui_gui_app
-# make changes from Qt Designer: pyuic6 ui_gui_app.ui -o ui_gui_app.py
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout
 
-app = QApplication(sys.argv)
-window = QDialog()
-ui = Ui_gui_app()
-ui.setupUi(window)
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Suchmaschine für Designerdrogen')
+        self.setMinimumSize(350, 200)
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
 
-window.show()
-sys.exit(app.exec())
+        title_label = QLabel('Ich suche...', central_widget)
 
-# import json
+        layout = QFormLayout(central_widget)
+        layout.addRow(title_label) 
+        layout.addRow('SMILES', QLineEdit())
+        layout.addRow('Formel', QLineEdit())
+        layout.addRow('Masse', QLineEdit())
+
+        search_button = QPushButton('Suchen', central_widget)
+        clear_button = QPushButton('Löschen', central_widget)
+        layout.addRow(search_button, clear_button)
+
+
+        
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
+
 
 # def search_compound_by_mass(compounds, mass):
 #     found_compounds = []
