@@ -57,6 +57,7 @@ class MainWindow(QMainWindow):
         self.result_text.clear()  # Clear previous results
 
         if result:
+            # Display the number of found compounds and their details
             self.result_text.append(f"{len(result)} Substanz(en) mit Masse {masse} +-0.5 gefunden:\n")
             for compound in result:
                 self.result_text.append(f"Name: {compound['names']}")
@@ -72,6 +73,7 @@ class MainWindow(QMainWindow):
                 self.result_text.append(f"URL: {compound['url']}")
                 self.result_text.append("-------------------------------------------")
         else:
+            # Display a message if no compounds were found
             self.result_text.append(f"Keine Substanzen mit {masse} +-0.5 gefunden.")
 
 
@@ -84,6 +86,9 @@ class MainWindow(QMainWindow):
         self.result_label.clear()
         self.result_text.clear()
 
+    # Searches for compounds in the JSON file with the given mass.
+    # Args: mass (float): The mass to search for.
+    # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
     def search_compound(self, mass):
         # Open the JSON file
         with open('test_data.json', encoding='utf-8') as f:
@@ -93,7 +98,10 @@ class MainWindow(QMainWindow):
         found_compounds = self.search_compound_by_mass(compounds, mass)
 
         return found_compounds
-        
+    
+    # Searches for compounds with the given mass within +-0.5 range.
+    # Args: compounds (list): A list of compounds to search within. mass (float): The mass to search for.
+    # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
     def search_compound_by_mass(self, compounds, mass):
         found_compounds = []
         for compound in compounds:
