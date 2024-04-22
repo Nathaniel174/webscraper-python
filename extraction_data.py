@@ -1,6 +1,8 @@
 import json
 import os
 from os import path
+from pypdf import PdfReader
+from datetime import datetime
 
 jsonFilePath = "data.json"
 
@@ -11,58 +13,108 @@ pdfFilePaths = []
 def getAllPdfNames():
     for file in os.listdir(pdfFolderPath):
         pdfFilePaths.append(pdfFolderPath + "/" + file)
+    
 
 # create dictionary to insert into json-file 
 def createDict(pdf):
     
+    tmp_pdf_name = pdf.split("/")
+    current_dt = str(datetime.now())
+    
     tmpDict = {}
     # all information about the substance
-    names = []
-    iupacName = ""
-    CAS = ""
-    appearance = ""
-    base_formular = ""
-    base_molecular_weight = ""
-    base_melting_point = ""
-    HCl_formular = ""
-    HCl_molecular_weight = ""
-    HCl_melting_point = ""
-    # id = ""
-    # formula = ""
-    # molecularWeight = ""
-    # categoryTag = ""
-    # inchi = ""
-    # inchiKey = ""
-    smiles = ""
-    url = ""
-    timestamp = ""
-
-
-    # initialise information to specific var 
-    # 
-    # 
-    # PLACEHOLDER
+    name = "" # IUPAC Name
+    synonyms = [] # Synonyms 
+    formula = "" # Chemical Formula 
+    smiles = "" 
+    inchi = ""
+    inchi_key = ""
+    molecular_mass = ""
+    cas_num = ""
+    source_name = "swgdrugs"
+    source_url = "https://swgdrug.org/Monographs/" + tmp_pdf_name[-1]
+    status = ""
+    last_changed_at = current_dt
+    special_data = []
     
+    # ------------
+    # initialise information to specific var:
+    
+    # read PDF into text as string
+    reader = PdfReader(pdf)
+    text = reader.pages[0].extract_text()
+    splittedText = text.split("\n")
+    
+    # Text extract for one line phrases 
+    for phrase in splittedText:
+        # IUPAC Name
+        if "iupac" in phrase.casefold():
+            tmp = phrase.split(": ")
+            tmpNoSpaces = []
+            for char in tmp[-1]: 
+                if " " != char: 
+                    tmpNoSpaces.append(char)
+            name = "".join(tmpNoSpaces)
+            
+        # CAS 
+        if "cas" in phrase.casefold():
+            tmp = phrase.split(": ")
+            tmpNoSpaces = []
+            for char in tmp[-1]: 
+                if " " != char: 
+                    tmpNoSpaces.append(char)
+            cas_num = "".join(tmpNoSpaces)
+            
+        # Source 
+        # if "source" in phrase.casefold():
+        #     tmp = phrase.split(": ")
+        #     source_name = tmp[-1]
+            
+        # Chemical Formula and Molecular Weight
+        
+        
+        if "base" in phrase.casefold():
+            tmp =  phrase.split(" ")
+            tmpNoSpaces = []
+            for element in tmp:
+                if "" != element:
+                    tmpNoSpaces.append(element)
+            if len(tmpNoSpaces) >= 2:
+                formula = tmpNoSpaces[1]
+                if len(tmpNoSpaces) >= 3:
+                    molecular_mass = tmpNoSpaces[2]
+        
+    # # Synonyms: 
+    # splittedText = text.split("Synonyms: ") 
+    # tmpText = splittedText[1].split("Source: ")
+    # splittedText = tmpText[0]
+    # tmpText = splittedText.split(", ")
+    # tmpText
+
+    # for sub in tmpText:
+    #     name.append(sub.replace("\n", ""))
     
     # initialise dictionary with found information 
-    tmpDict = {"names" : names,
-               "iupac_name" : iupacName,
-               "CAS" : CAS,
-               "appearance" : appearance,
-               "base_formular" : base_formular,
-               "base_molecular_weight" : base_molecular_weight,
-               "base_melting_point" : base_melting_point,
-               "HCl_formular" : HCl_formular,
-               "HCl_molecular_weight" : HCl_molecular_weight,
-               "HCl_melting_point" : HCl_melting_point,
+    tmpDict = {"name" : name,
+               "synoyms" : synonyms,
+               "formula" : formula,
                "smiles" : smiles,
-               "url" : url,
-               "timestamp" : timestamp
+               "inchi" : inchi,
+               "inchi_key" : inchi_key,
+               "molecular_mass" : molecular_mass,
+               "cas-num" : cas_num,
+               "source_name" : source_name,
+               "source_url" : source_url,
+               "status" : status,
+               "last_changed_at" : last_changed_at,
+               "special_data" : special_data
                }
     
     return tmpDict
 
 def addSubstance(pdf):
+    
+    tmp_pdf_name = pdf.split("/")
     
     # check for file and create new if no json file in directory
     # insert array "[]"
@@ -81,7 +133,7 @@ def addSubstance(pdf):
     with open(jsonFilePath, "w") as outfile: 
         json.dump(content, outfile,  indent = 4, separators = (',',': '))
     
-    print('Successfully appended to the JSON file')
+    print('Successfully appended to JSON: ', tmp_pdf_name[-1])
     
 # --------- main ----------
 def add_all_to_json():
