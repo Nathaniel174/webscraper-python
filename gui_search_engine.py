@@ -60,17 +60,19 @@ class MainWindow(QMainWindow):
             # Display the number of found compounds and their details
             self.result_text.append(f"{len(result)} Substanz(en) mit Masse {masse} +-0.5 gefunden:\n")
             for compound in result:
-                self.result_text.append(f"Name: {compound['names']}")
-                self.result_text.append(f"IUPAC name: {compound['iupac_name']}")
-                self.result_text.append(f"CAS: {compound['CAS']}")
-                self.result_text.append(f"Appearance: {compound['appearance']}")
-                self.result_text.append(f"Base formula: {compound['base_formular']}")
-                self.result_text.append(f"Base molecular weight: {compound['base_molecular_weight']}")
-                self.result_text.append(f"Base melting point: {compound['base_melting_point']}")
-                self.result_text.append(f"HCl formula: {compound['HCl_formular']}")
-                self.result_text.append(f"HCl molecular weight: {compound['HCl_molecular_weight']}")
-                self.result_text.append(f"HCl melting point: {compound['HCl_melting_point']}")
-                self.result_text.append(f"URL: {compound['url']}")
+                self.result_text.append(f"Name: {compound['name']}")
+                self.result_text.append(f"Synoyms: {compound['synoyms']}")
+                self.result_text.append(f"Formula: {compound['formula']}")
+                self.result_text.append(f"Smiles: {compound['smiles']}")
+                self.result_text.append(f"inchi: {compound['inchi']}")
+                self.result_text.append(f"inchi_key: {compound['inchi_key']}")
+                self.result_text.append(f"molecular_mass: {compound['molecular_mass']}")
+                self.result_text.append(f"cas-num: {compound['cas-num']}")
+                self.result_text.append(f"source_name: {compound['source_name']}")
+                self.result_text.append(f"source_url: {compound['source_url']}")
+                self.result_text.append(f"status: {compound['status']}")
+                self.result_text.append(f"last_changed_at: {compound['last_changed_at']}")
+                self.result_text.append(f"special_data: {compound['special_data']}")
                 self.result_text.append("-------------------------------------------")
         else:
             # Display a message if no compounds were found
@@ -106,12 +108,8 @@ class MainWindow(QMainWindow):
         found_compounds = []
         for compound in compounds:
             # Check base molecular weight +- 0.5
-            if "base_molecular_weight" in compound and (compound["base_molecular_weight"] >= (mass-0.5) and compound["base_molecular_weight"] <= (mass+0.5)):
+            if ("molecular_mass") in compound and (compound["molecular_mass"] >= (mass-0.5) and compound["molecular_mass"] <= (mass+0.5)):
                 found_compounds.append(compound)
-            # Check HCl molecular weight +- 0.5
-            elif "HCl_molecular_weight" in compound and isinstance(compound["HCl_molecular_weight"], (int, float)):
-                if (compound["HCl_molecular_weight"] >= (mass-0.5) and compound["HCl_molecular_weight"] <= (mass+0.5)):
-                    found_compounds.append(compound)
         return found_compounds
 
 
