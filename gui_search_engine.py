@@ -1,6 +1,6 @@
 import json
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout, QMessageBox, QTextEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout, QMessageBox, QTextEdit, QHBoxLayout
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -36,7 +36,18 @@ class MainWindow(QMainWindow):
         self.result_number = QTextEdit() # Create a QTextEdit widget to display the number of search results
         self.result_text = QTextEdit()  # Create a QTextEdit widget to display a list of search results
         layout.addWidget(self.result_number)
-        layout.addWidget(self.result_text)
+
+        # Create buttons for additional information about found substances
+        info_button = QPushButton('Info')
+        pdf_button = QPushButton('PDF')
+        # Create a widget to hold the buttons
+        button_widget = QWidget()
+        button_layout = QHBoxLayout(button_widget)
+        button_layout.addWidget(info_button)
+        button_layout.addWidget(pdf_button)
+        
+        # Add the widget with a list of search results and buttons 'info' and 'pdf' to the layout
+        layout.addRow(self.result_text, button_widget)
 
         # Connect returnPressed signal of QLineEdit fields to on_button_click method
         self.smiles_field.returnPressed.connect(self.on_button_click)
@@ -70,23 +81,25 @@ class MainWindow(QMainWindow):
         self.result_text.clear()
 
         if result:
-            # Display the number of found compounds and their details
+            # Display the number of found compounds
             self.result_number.append(f"{len(result)} Substanz(en) mit Masse {masse} +-0.5 gefunden:\n")
+            # Display the details of found compounds
             for compound in result:
-                self.result_text.append(f"Name: {compound['name']}")
-                self.result_text.append(f"Synoyms: {compound['synoyms']}")
-                self.result_text.append(f"Formula: {compound['formula']}")
-                self.result_text.append(f"Smiles: {compound['smiles']}")
-                self.result_text.append(f"inchi: {compound['inchi']}")
-                self.result_text.append(f"inchi_key: {compound['inchi_key']}")
-                self.result_text.append(f"molecular_mass: {compound['molecular_mass']}")
-                self.result_text.append(f"cas-num: {compound['cas-num']}")
-                self.result_text.append(f"source_name: {compound['source_name']}")
-                self.result_text.append(f"source_url: {compound['source_url']}")
-                self.result_text.append(f"status: {compound['status']}")
-                self.result_text.append(f"last_changed_at: {compound['last_changed_at']}")
-                self.result_text.append(f"special_data: {compound['special_data']}")
-                self.result_text.append("-------------------------------------------")
+                self.result_text.append(f"Name: {compound['name']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
+                
+                # self.result_text.append(f"Synoyms: {compound['synoyms']}")
+                # self.result_text.append(f"Formula: {compound['formula']}")
+                # self.result_text.append(f"Smiles: {compound['smiles']}")
+                # self.result_text.append(f"inchi: {compound['inchi']}")
+                # self.result_text.append(f"inchi_key: {compound['inchi_key']}")
+                # self.result_text.append(f"molecular_mass: {compound['molecular_mass']}")
+                # self.result_text.append(f"cas-num: {compound['cas-num']}")
+                # self.result_text.append(f"source_name: {compound['source_name']}")
+                # self.result_text.append(f"source_url: {compound['source_url']}")
+                # self.result_text.append(f"status: {compound['status']}")
+                # self.result_text.append(f"last_changed_at: {compound['last_changed_at']}")
+                # self.result_text.append(f"special_data: {compound['special_data']}")
+                # self.result_text.append("-------------------------------------------")
         else:
             # Display a message if no compounds were found
             self.result_number.append(f"Keine Substanzen mit Masse {masse} +-0.5 gefunden.")
