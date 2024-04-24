@@ -5,7 +5,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Suchmaschine für Designerdrogen') # Set window title
-        self.setMinimumSize(350, 200) # Set minimum window size
+        self.setMinimumSize(500, 400) # Set minimum window size
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         self.result_label = QLabel()
@@ -33,8 +33,15 @@ class MainWindow(QMainWindow):
         clear_button.clicked.connect(self.clear_fields)
         layout.addRow(search_button, clear_button)
         layout.addWidget(self.result_label)
-        self.result_text = QTextEdit()  # Create a QTextEdit widget to display search results
+        self.result_number = QTextEdit() # Create a QTextEdit widget to display the number of search results
+        self.result_text = QTextEdit()  # Create a QTextEdit widget to display a list of search results
+        layout.addWidget(self.result_number)
         layout.addWidget(self.result_text)
+
+        # Connect returnPressed signal of QLineEdit fields to on_button_click method
+        self.smiles_field.returnPressed.connect(self.on_button_click)
+        self.formel_field.returnPressed.connect(self.on_button_click)
+        self.masse_field.returnPressed.connect(self.on_button_click)
    
     #Function to handle the click event of the 'Suchen' button.
     #It retrieves the text from the input fields, constructs a message, and sets it as the text of the result label.
@@ -44,21 +51,27 @@ class MainWindow(QMainWindow):
         masse = self.masse_field.text()
 
         # Validate if masse input is a float
-        try:
-            masse = float(masse)
-        except ValueError:
-            # If not a float, display an error message
-            QMessageBox.critical(self, 'Fehler', 'Masse sollte eine Zahl sein.')
-            return  # Exit the function
+        # Convert masse to float if not empty
+        if masse:
+            try:
+                masse = float(masse)
+            except ValueError:
+                # If not a float, display an error message and return
+                QMessageBox.critical(self, 'Fehler', 'Masse sollte eine Zahl sein.')
+                return  # Exit the function
+        else:
+            masse = None  # Set masse to None if field is empty
 
         self.result_label.setText(f'Ich suche Substanzen mit SMILES {smiles}, Formel {formel} und Masse {masse}')
-    
+        
         result = self.search_compound(masse)
-        self.result_text.clear()  # Clear previous results
+        # Clear previous results
+        self.result_number.clear()
+        self.result_text.clear()
 
         if result:
             # Display the number of found compounds and their details
-            self.result_text.append(f"{len(result)} Substanz(en) mit Masse {masse} +-0.5 gefunden:\n")
+            self.result_number.append(f"{len(result)} Substanz(en) mit Masse {masse} +-0.5 gefunden:\n")
             for compound in result:
                 self.result_text.append(f"Name: {compound['name']}")
                 self.result_text.append(f"Synoyms: {compound['synoyms']}")
@@ -76,7 +89,7 @@ class MainWindow(QMainWindow):
                 self.result_text.append("-------------------------------------------")
         else:
             # Display a message if no compounds were found
-            self.result_text.append(f"Keine Substanzen mit {masse} +-0.5 gefunden.")
+            self.result_number.append(f"Keine Substanzen mit Masse {masse} +-0.5 gefunden.")
 
 
     # Function to handle the click event of the 'Löschen' button.
@@ -86,6 +99,7 @@ class MainWindow(QMainWindow):
         self.formel_field.clear()
         self.masse_field.clear()
         self.result_label.clear()
+        self.result_number.clear()
         self.result_text.clear()
 
     # Searches for compounds in the JSON file with the given mass.
@@ -107,9 +121,13 @@ class MainWindow(QMainWindow):
     def search_compound_by_mass(self, compounds, mass):
         found_compounds = []
         for compound in compounds:
-            # Check base molecular weight +- 0.5
-            if ("molecular_mass") in compound and (compound["molecular_mass"] >= (mass-0.5) and compound["molecular_mass"] <= (mass+0.5)):
-                found_compounds.append(compound)
+            # Check if compound has molecular_mass key
+            if "molecular_mass" in compound:
+                # Check if mass is not None
+                if (compound["molecular_mass"] is not None) and (mass is not None):
+                    # Check molecular_mass +- 0.5
+                    if (compound["molecular_mass"] >= (mass-0.5) and compound["molecular_mass"] <= (mass+0.5)):
+                        found_compounds.append(compound)
         return found_compounds
 
 
