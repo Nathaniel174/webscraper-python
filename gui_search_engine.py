@@ -22,8 +22,8 @@ class MainWindow(QMainWindow):
         self.formel_field = QLineEdit()
         layout.addRow('Formel', self.formel_field)
         # Add a line edit widget for Masse
-        self.masse_field = QLineEdit()
-        layout.addRow('Masse', self.masse_field)
+        self.mass_field = QLineEdit()
+        layout.addRow('Masse', self.mass_field)
 
         search_button = QPushButton('Suchen', central_widget)
         clear_button = QPushButton('Löschen', central_widget)
@@ -52,37 +52,37 @@ class MainWindow(QMainWindow):
         # Connect returnPressed signal of QLineEdit fields to on_button_click method
         self.smiles_field.returnPressed.connect(self.on_button_click)
         self.formel_field.returnPressed.connect(self.on_button_click)
-        self.masse_field.returnPressed.connect(self.on_button_click)
+        self.mass_field.returnPressed.connect(self.on_button_click)
    
     #Function to handle the click event of the 'Suchen' button.
     #It retrieves the text from the input fields, constructs a message, and sets it as the text of the result label.
     def on_button_click(self):
         smiles = self.smiles_field.text()
-        formel = self.formel_field.text()
-        masse = self.masse_field.text()
+        formel = (self.formel_field.text()).upper().strip() # Remove spaces at the beginning and end, all in uppercase
+        mass = self.mass_field.text()
 
-        # Validate if masse input is a float
-        # Convert masse to float if not empty
-        if masse:
+        # Validate if mass input is a float
+        # Convert mass to float if not empty
+        if mass:
             try:
-                masse = float(masse)
+                mass = float(mass)
             except ValueError:
                 # If not a float, display an error message and return
                 QMessageBox.critical(self, 'Fehler', 'Masse sollte eine Zahl sein.')
                 return  # Exit the function
         else:
-            masse = None  # Set masse to None if field is empty
+            mass = None  # Set mass to None if field is empty
 
-        self.result_label.setText(f'Ich suche Substanzen mit SMILES {smiles}, Formel {formel} und Masse {masse}')
+        self.result_label.setText(f'Ich suche Substanzen mit SMILES {smiles}, Formel {formel} und Masse {mass}')
         
-        result = self.search_compound(masse)
+        result = self.search_compound(formel, mass)
         # Clear previous results
         self.result_number.clear()
         self.result_text.clear()
 
         if result:
             # Display the number of found compounds
-            self.result_number.append(f"{len(result)} Substanz(en) mit Masse {masse} +-0.5 gefunden:\n")
+            self.result_number.append(f"{len(result)} Substanz(en) mit Formel {formel} und Masse {mass} +-0.5 gefunden:\n")
             # Display the details of found compounds
             for compound in result:
                 self.result_text.append(f"Name: {compound['name']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
                 # self.result_text.append("-------------------------------------------")
         else:
             # Display a message if no compounds were found
-            self.result_number.append(f"Keine Substanzen mit Masse {masse} +-0.5 gefunden.")
+            self.result_number.append(f"Keine Substanzen mit Formel {formel} und Masse {mass} +-0.5 gefunden.")
 
 
     # Function to handle the click event of the 'Löschen' button.
@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
     def clear_fields(self):
         self.smiles_field.clear()
         self.formel_field.clear()
-        self.masse_field.clear()
+        self.mass_field.clear()
         self.result_label.clear()
         self.result_number.clear()
         self.result_text.clear()
@@ -118,16 +118,21 @@ class MainWindow(QMainWindow):
     # Searches for compounds in the JSON file with the given mass.
     # Args: mass (float): The mass to search for.
     # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
-    def search_compound(self, mass):
+    def search_compound(self, formel, mass):
         # Open the JSON file
         with open('test_data.json', encoding='utf-8') as f:
             compounds = json.load(f)
 
         # Search for compounds with the given mass
-        found_compounds = self.search_compound_by_mass(compounds, mass)
+        if (mass is not None):
+            found_compounds_mass = self.search_compound_by_mass(compounds, mass)
+            # Search for compounds with the given formel
+            found_compounds = self.search_compound_by_formel(found_compounds_mass, formel)
+            return found_compounds
+        else:
+            found_compounds = self.search_compound_by_formel(compounds, formel)
+            return found_compounds
 
-        return found_compounds
-    
     # Searches for compounds with the given mass within +-0.5 range.
     # Args: compounds (list): A list of compounds to search within. mass (float): The mass to search for.
     # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
@@ -141,6 +146,14 @@ class MainWindow(QMainWindow):
                     # Check molecular_mass +- 0.5
                     if (compound["molecular_mass"] >= (mass-0.5) and compound["molecular_mass"] <= (mass+0.5)):
                         found_compounds.append(compound)
+        return found_compounds
+    
+    def search_compound_by_formel(self, compounds, formel):
+        found_compounds = []
+        for compound in compounds:
+            if (compound["formula"] is not None) and (formel is not None):
+                if ((compound["formula"]).upper() == formel):
+                    found_compounds.append(compound)
         return found_compounds
 
 
