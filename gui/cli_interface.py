@@ -2,8 +2,8 @@ import cmd
 import os
 
 # import own scripts
-from pdf_download import *
-from extraction_data import *
+from utils.pdf_download import *
+from utils.data_extraction import *
 
 class devInterface(cmd.Cmd):
     intro = 'Welcome to the DevInterface of our webscraper project. Type help or ? to list commands.\n'
