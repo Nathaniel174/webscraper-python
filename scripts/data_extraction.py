@@ -10,13 +10,13 @@ pdfFolderPath = "./pdf-files"
 pdfFilePaths = []
 
 
-def getAllPdfNames():
+def get_all_pdf_names():
     for file in os.listdir(pdfFolderPath):
         pdfFilePaths.append(pdfFolderPath + "/" + file)
     
 
 # create dictionary to insert into json-file 
-def createDict(pdf):
+def create_dict(pdf):
     
     tmp_pdf_name = pdf.split("/")
     current_dt = str(datetime.now())
@@ -112,7 +112,7 @@ def createDict(pdf):
     
     return tmpDict
 
-def addSubstance(pdf):
+def add_substance(pdf):
     
     tmp_pdf_name = pdf.split("/")
     
@@ -127,7 +127,7 @@ def addSubstance(pdf):
         content = json.load(js)
     
     # append content 
-    content.append(createDict(pdf))
+    content.append(create_dict(pdf))
     
     # dump content 
     with open(jsonFilePath, "w") as outfile: 
@@ -138,6 +138,6 @@ def addSubstance(pdf):
 # --------- main ----------
 def add_all_to_json():
     # get all PDF-file names 
-    getAllPdfNames()
+    get_all_pdf_names()
     for pdf in pdfFilePaths: 
-        addSubstance(pdf)
+        add_substance(pdf)

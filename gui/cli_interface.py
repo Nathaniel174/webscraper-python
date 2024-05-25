@@ -2,11 +2,11 @@ import cmd
 import os
 
 # import own scripts
-from utils.pdf_download import *
-from utils.data_extraction import *
+from scripts.pdf_download import *
+from scripts.data_extraction import *
 
-class devInterface(cmd.Cmd):
-    intro = 'Welcome to the DevInterface of our webscraper project. Type help or ? to list commands.\n'
+class Cli_Interface(cmd.Cmd):
+    intro = 'Welcome to the CLI Interface of our webscraper project. Type help or ? to list commands.\n'
     prompt = '(webscraper) -> '
     file = None
     
@@ -43,4 +43,4 @@ def delete():
         print("There is no data.json")
 
 if __name__ == '__main__':
-    devInterface().cmdloop()
+    Cli_Interface().cmdloop()

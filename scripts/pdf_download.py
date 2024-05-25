@@ -19,20 +19,20 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 url = "https://swgdrug.org/monographs.htm"
 
 # Create an Array with urls of every PDF 
-fileUrls = []
+file_urls = []
 
 # Print every PDF-Url in CLI
 def print_all_html_filelinks():
     i = 0
     print("================== All PDF Files ==================")
-    for url in fileUrls: 
+    for url in file_urls: 
         i = i + 1
         print(i , ".: " , url)
         
-    print("Anzahl PDF-Links: ",len(fileUrls))    
+    print("Anzahl PDF-Links: ",len(file_urls))    
 
 
-# Get all PDF links from Website url and save them in 'fileUrls'
+# Get all PDF links from Website url and save them in 'file_urls'
 def get_all_pdf_links():
     # Url Requests to get the Website as response object
     # verify=False because of an SSL Error with the specific website 
@@ -53,10 +53,10 @@ def get_all_pdf_links():
         if "Large_Logo" in tmp_link:
             continue
         
-        # append then to 'fileUrls' array
-        fileUrls.append(tmp_link)
+        # append then to 'file_urls' array
+        file_urls.append(tmp_link)
         
-    if (len(fileUrls) == 0):
+    if (len(file_urls) == 0):
         print("CHECKING AGAIN")
         get_all_pdf_links()
     
@@ -120,7 +120,7 @@ def download_all():
     i = 0
     
     get_all_pdf_links()
-    for url in fileUrls:
+    for url in file_urls:
         if download_pdf_files(url) == True:
             i += 1
             
@@ -130,12 +130,12 @@ def download_all():
 def download_random(num):
     get_all_pdf_links()
     for i in range(0,int(num)):
-        tmp = random.randint(0,len(fileUrls))
-        download_pdf_files(fileUrls[tmp])
+        tmp = random.randint(0,len(file_urls))
+        download_pdf_files(file_urls[tmp])
 
 # get extra info
 def get_info():
-    if len(fileUrls) == 0:
+    if len(file_urls) == 0:
         get_all_pdf_links()
         
     print_all_html_filelinks()
