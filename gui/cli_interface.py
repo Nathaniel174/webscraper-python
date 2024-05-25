@@ -2,8 +2,9 @@ import cmd
 import os
 
 # import own scripts
-from scripts.pdf_download import *
-from scripts.data_extraction import *
+# from scripts.pdf_download import *
+# from scripts.data_extraction import *
+import scripts
 
 class Cli_Interface(cmd.Cmd):
     intro = 'Welcome to the CLI Interface of our webscraper project. Type help or ? to list commands.\n'
@@ -12,13 +13,13 @@ class Cli_Interface(cmd.Cmd):
     
     # ------- basic dev commands -------
     def do_downloadAll(self, arg):
-        download_all()
+        scripts.pdf_download.download_all()
     
     def do_downloadRandom(self, arg):
-        download_random(arg)
+        scripts.pdf_download.download_random(arg)
     
     def do_addToJSON(self, arg):
-        add_all_to_json()
+        scripts.data_extraction.extract_to_json()
     
     def do_deleteDATA(self, arg):
         delete()
@@ -38,7 +39,6 @@ def delete():
     if "data.json" in os.listdir("./"):
         os.remove("./data.json")
         print("data.json successfully removed")
-        
     else: 
         print("There is no data.json")
 

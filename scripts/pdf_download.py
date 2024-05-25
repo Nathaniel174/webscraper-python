@@ -65,7 +65,6 @@ def get_all_pdf_links():
 def download_pdf_files(fileUrl):
     
     # Create folder pdf-files if there is no such folder
-    # TODO try under WINDOWS 
     folder_location = r'pdf-files'
     
     
