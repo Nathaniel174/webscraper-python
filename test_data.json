@@ -1,47 +1,77 @@
 [
     {
-        "name": "1-(4-chloro-2,5-dimethoxyphenyl)propan-2-amine",
-        "synoyms": [],
-        "formula": "C10H15N",
+        "version": "",
         "smiles": "",
+        "names": [
+            "4-Chloro-2,5-Dimethoxyamphetamine",
+            "DOC,  4-Cl-2,5-DMA, 2,5-dimethoxy-4-chloroamphetamine"
+        ],
+        "iupac_names": [
+            "1-(4-chloro-2,5-dimethoxyphenyl)propan-2-amine"
+        ],
+        "formula": "",
         "inchi": "",
         "inchi_key": "",
-        "molecular_mass": 170.2,
-        "cas-num": "123431-31-2(base),42203-77-0(HCl)",
-        "source_name": "swgdrugs",
-        "source_url": "https://swgdrug.org/Monographs/4-Chloro-2,5-dimethoxyamphetamine.pdf",
-        "status": "",
-        "last_changed_at": "2024-04-23 16:31:15.227627",
-        "special_data": []
+        "molecular_mass": 0.0,
+        "cas_num": "123431-31-2 (base),  42203-77-0 (HCl)",
+        "categories": [],
+        "source": [
+            "swgdrugs",
+            "https://swgdrug.org/Monographs/4-Chloro-2,5-dimethoxyamphetamine.pdf"
+        ],
+        "validated": false,
+        "deleted": false,
+        "last_modified": "2024-05-26 00:22:15.134771",
+        "details": {}
     },
     {
-        "name": "",
-        "synoyms": [],
-        "formula": "C10H15N",
+        "version": "",
         "smiles": "",
+        "names": [
+            "Chlorzoxazone",
+            "5-chloro-2-benzoxazolone, 5-chloro-2-benzoxazolol,"
+        ],
+        "iupac_names": [
+            "5-chlorobenzo[d]oxazol-2(3H)-one"
+        ],
+        "formula": "",
         "inchi": "",
         "inchi_key": "",
-        "molecular_mass": 149.2,
-        "cas-num": "537-46-2",
-        "source_name": "swgdrugs",
-        "source_url": "https://swgdrug.org/Monographs/METHAMPHETAMINE.pdf",
-        "status": "",
-        "last_changed_at": "2024-04-23 16:31:15.243992",
-        "special_data": []
+        "molecular_mass": 0.0,
+        "cas_num": "95-25-0",
+        "categories": [],
+        "source": [
+            "swgdrugs",
+            "https://swgdrug.org/Monographs/Chlorzoxazone.pdf"
+        ],
+        "validated": false,
+        "deleted": false,
+        "last_modified": "2024-05-26 00:22:16.168504",
+        "details": {}
     },
     {
-        "name": "5-chlorobenzo[d]oxazol-2(3H)-one",
-        "synoyms": [],
-        "formula": "C7H4ClNO2",
+        "version": "",
         "smiles": "",
+        "names": [
+            "25D-NBOMe",
+            "25D-NB2OMe, 2C-D-NBOMe"
+        ],
+        "iupac_names": [
+            "2-(2,5-dimethoxy-4-methylphenyl)-N-(2-methoxybenzyl)ethanamine"
+        ],
+        "formula": "",
         "inchi": "",
         "inchi_key": "",
-        "molecular_mass": 169.56,
-        "cas-num": "95-25-0",
-        "source_name": "swgdrugs",
-        "source_url": "https://swgdrug.org/Monographs/Chlorzoxazone.pdf",
-        "status": "",
-        "last_changed_at": "2024-04-23 16:31:15.266460",
-        "special_data": []
+        "molecular_mass": 0.0,
+        "cas_num": "1354632-02-2 (base), 1539266-35-7 (HCl)",
+        "categories": [],
+        "source": [
+            "swgdrugs",
+            "https://swgdrug.org/Monographs/25D_NBOMe.pdf"
+        ],
+        "validated": false,
+        "deleted": false,
+        "last_modified": "2024-05-26 00:22:16.449587",
+        "details": {}
     }
 ]

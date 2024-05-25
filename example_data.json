@@ -1,17 +1,27 @@
 [
     {
-        "names" : "", 
-        "iupac_name" : "",
-        "CAS" : "",
-        "appearance" : "",
-        "base_formular" : "",
-        "base_molecular_weight" : "",
-        "base_melting_point" : "",
-        "HCl_formular" : "",
-        "HCl_molecular_weight" : "",
-        "HCl_melting_point" : "",
-        "smiles" : "",
-        "url" : "",
-        "timestamp" : ""
+        "version": "",
+        "smiles": "",
+        "names": [
+            "4-Chloro-2,5-Dimethoxyamphetamine",
+            "DOC,  4-Cl-2,5-DMA, 2,5-dimethoxy-4-chloroamphetamine"
+        ],
+        "iupac_names": [
+            "1-(4-chloro-2,5-dimethoxyphenyl)propan-2-amine"
+        ],
+        "formula": "",
+        "inchi": "",
+        "inchi_key": "",
+        "molecular_mass": 0.0,
+        "cas_num": "123431-31-2 (base),  42203-77-0 (HCl)",
+        "categories": [],
+        "source": [
+            "swgdrugs",
+            "https://swgdrug.org/Monographs/4-Chloro-2,5-dimethoxyamphetamine.pdf"
+        ],
+        "validated": false,
+        "deleted": false,
+        "last_modified": "2024-05-26 00:22:15.134771",
+        "details": {}
     }
 ]
