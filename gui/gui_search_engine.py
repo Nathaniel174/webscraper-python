@@ -1,6 +1,10 @@
 import json
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout, QMessageBox, QTextEdit, QHBoxLayout
+
+# JSON file
+data_json = 'test_data.json'
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -85,21 +89,8 @@ class MainWindow(QMainWindow):
             self.result_number.append(f"{len(result)} Substanz(en) mit Formel {formel} und Masse {mass} +-0.5 gefunden:\n")
             # Display the details of found compounds
             for compound in result:
-                self.result_text.append(f"Name: {compound['name']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
+                self.result_text.append(f"Name: {compound['names']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
                 
-                # self.result_text.append(f"Synoyms: {compound['synoyms']}")
-                # self.result_text.append(f"Formula: {compound['formula']}")
-                # self.result_text.append(f"Smiles: {compound['smiles']}")
-                # self.result_text.append(f"inchi: {compound['inchi']}")
-                # self.result_text.append(f"inchi_key: {compound['inchi_key']}")
-                # self.result_text.append(f"molecular_mass: {compound['molecular_mass']}")
-                # self.result_text.append(f"cas-num: {compound['cas-num']}")
-                # self.result_text.append(f"source_name: {compound['source_name']}")
-                # self.result_text.append(f"source_url: {compound['source_url']}")
-                # self.result_text.append(f"status: {compound['status']}")
-                # self.result_text.append(f"last_changed_at: {compound['last_changed_at']}")
-                # self.result_text.append(f"special_data: {compound['special_data']}")
-                # self.result_text.append("-------------------------------------------")
         else:
             # Display a message if no compounds were found
             self.result_number.append(f"Keine Substanzen mit Formel {formel} und Masse {mass} +-0.5 gefunden.")
@@ -115,23 +106,28 @@ class MainWindow(QMainWindow):
         self.result_number.clear()
         self.result_text.clear()
 
-    # Searches for compounds in the JSON file with the given mass.
+    # Searches for compounds in the JSON file
     # Args: mass (float): The mass to search for.
     # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
     def search_compound(self, formel, mass):
         # Open the JSON file
-        with open('test_data.json', encoding='utf-8') as f:
+        with open(data_json, encoding='utf-8') as f:
             compounds = json.load(f)
 
         # Search for compounds with the given mass
         if (mass is not None):
-            found_compounds_mass = self.search_compound_by_mass(compounds, mass)
-            # Search for compounds with the given formel
-            found_compounds = self.search_compound_by_formel(found_compounds_mass, formel)
+            if formel:
+                found_compounds_mass = self.search_compound_by_mass(compounds, mass)
+                # Search for compounds with the given formel
+                found_compounds = self.search_compound_by_formel(found_compounds_mass, formel)
+            else:
+                found_compounds = self.search_compound_by_mass(compounds, mass)
             return found_compounds
-        else:
+        elif formel:
             found_compounds = self.search_compound_by_formel(compounds, formel)
             return found_compounds
+        else:
+            return compounds
 
     # Searches for compounds with the given mass within +-0.5 range.
     # Args: compounds (list): A list of compounds to search within. mass (float): The mass to search for.
