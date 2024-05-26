@@ -79,21 +79,21 @@ class MainWindow(QMainWindow):
 
         self.result_label.setText(f'Ich suche Substanzen mit SMILES {smiles}, Formel {formel} und Masse {mass}')
         
-        result = self.search_compound(formel, mass)
+        result = self.search_compound(smiles, formel, mass)
         # Clear previous results
         self.result_number.clear()
         self.result_text.clear()
 
         if result:
             # Display the number of found compounds
-            self.result_number.append(f"{len(result)} Substanz(en) mit Formel {formel} und Masse {mass} +-0.5 gefunden:\n")
+            self.result_number.append(f"{len(result)} Substanz(en) mit SMILES {smiles}, Formel {formel} und Masse {mass} +-0.5 gefunden:\n")
             # Display the details of found compounds
             for compound in result:
                 self.result_text.append(f"Name: {compound['names']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
                 
         else:
             # Display a message if no compounds were found
-            self.result_number.append(f"Keine Substanzen mit Formel {formel} und Masse {mass} +-0.5 gefunden.")
+            self.result_number.append(f"Keine Substanzen mit SMILES {smiles}, Formel {formel} und Masse {mass} +-0.5 gefunden.")
 
 
     # Function to handle the click event of the 'Löschen' button.
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
     # Searches for compounds in the JSON file
     # Args: mass (float): The mass to search for.
     # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
-    def search_compound(self, formel, mass):
+    def search_compound(self, smiles, formel, mass):
         # Open the JSON file
         with open(data_json, encoding='utf-8') as f:
             compounds = json.load(f)
@@ -117,14 +117,28 @@ class MainWindow(QMainWindow):
         # Search for compounds with the given mass
         if (mass is not None):
             if formel:
+                if smiles:
+                    found_compounds_mass = self.search_compound_by_mass(compounds, mass)
+                    found_compounds_formel = self.search_compound_by_formel(found_compounds_mass, formel)
+                    found_compounds = self.search_compound_by_smiles(found_compounds_formel, smiles)
+                else:
+                    found_compounds_mass = self.search_compound_by_mass(compounds, mass)
+                    found_compounds = self.search_compound_by_formel(found_compounds_mass, formel)
+            elif smiles:
                 found_compounds_mass = self.search_compound_by_mass(compounds, mass)
-                # Search for compounds with the given formel
-                found_compounds = self.search_compound_by_formel(found_compounds_mass, formel)
+                found_compounds = self.search_compound_by_smiles(found_compounds_mass, smiles)
             else:
                 found_compounds = self.search_compound_by_mass(compounds, mass)
             return found_compounds
         elif formel:
-            found_compounds = self.search_compound_by_formel(compounds, formel)
+            if smiles:
+                found_compounds_formel = self.search_compound_by_formel(compounds, formel)
+                found_compounds = self.search_compound_by_smiles(found_compounds_formel, smiles)
+            else:
+                found_compounds = self.search_compound_by_formel(compounds, formel)
+            return found_compounds
+        elif smiles:
+            found_compounds = self.search_compound_by_smiles(compounds, smiles)
             return found_compounds
         else:
             return compounds
@@ -149,6 +163,14 @@ class MainWindow(QMainWindow):
         for compound in compounds:
             if (compound["formula"] is not None) and (formel is not None):
                 if ((compound["formula"]).upper() == formel):
+                    found_compounds.append(compound)
+        return found_compounds
+    
+    def search_compound_by_smiles(self, compounds, smiles):
+        found_compounds = []
+        for compound in compounds:
+            if (compound["smiles"] is not None) and (smiles is not None):
+                if ((compound["smiles"]) == smiles):
                     found_compounds.append(compound)
         return found_compounds
 
