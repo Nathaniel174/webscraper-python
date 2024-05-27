@@ -18,6 +18,15 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Set the Url of the main Website 
 url = "https://swgdrug.org/monographs.htm"
 
+# Set header for http-get request
+headers = {
+    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1',
+    'Accept-Language': 'de-DE,de;q=0.7',
+    'Referer': 'https://google.com',
+    'DNT': '1'
+}
+
+
 # Create an Array with urls of every PDF 
 file_urls = []
 
@@ -36,7 +45,7 @@ def print_all_html_filelinks():
 def get_all_pdf_links():
     # Url Requests to get the Website as response object
     # verify=False because of an SSL Error with the specific website 
-    response = requests.get(url, verify=False)
+    response = requests.get(url, verify=False, headers=headers)
 
     # Parse obtained text
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -67,13 +76,12 @@ def download_pdf_files(fileUrl):
     # Create folder pdf-files if there is no such folder
     folder_location = r'pdf-files'
     
-    
     if not os.path.exists(folder_location):
         print("================== Creating folder: pdf-files ==================")
         os.mkdir(folder_location)
 
     # Request URL and get response object
-    response = requests.get(fileUrl, stream=True, verify=False)
+    response = requests.get(fileUrl, stream=True, verify=False, headers=headers)
 
     # isolate PDF filename from URL
     pdf_file_name = os.path.basename(fileUrl)
