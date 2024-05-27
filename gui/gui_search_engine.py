@@ -1,121 +1,140 @@
 import json
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout, QMessageBox, QTextEdit, QHBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout, QMessageBox, QHBoxLayout, QVBoxLayout, QScrollArea, QSizePolicy
+from PyQt6.QtCore import Qt
 
 # JSON file
 data_json = 'test_data.json'
+
+class ResultWidget(QWidget):
+    def __init__(self, compound):
+        super().__init__()
+        self.compound = compound
+        layout = QVBoxLayout(self)
+
+        self.info_label = QLabel(f"Name: {compound['names']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
+        layout.addWidget(self.info_label)
+
+        button_layout = QHBoxLayout()
+        self.info_button = QPushButton('Info')
+        self.pdf_button = QPushButton('PDF')
+        button_layout.addWidget(self.info_button)
+        button_layout.addWidget(self.pdf_button)
+        layout.addLayout(button_layout)
+
+        # Connect buttons to actions
+        self.info_button.clicked.connect(self.show_info)
+        self.pdf_button.clicked.connect(self.show_pdf)
+
+    def show_info(self):
+        QMessageBox.information(self, 'Info', f"Information about {self.compound['names']}")
+
+    def show_pdf(self):
+        QMessageBox.information(self, 'PDF', f"PDF for {self.compound['names']}")
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Suchmaschine für Designerdrogen') # Set window title
-        self.setMinimumSize(500, 400) # Set minimum window size
+        self.setMinimumSize(650, 400) # Set minimum window size
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        self.result_label = QLabel()
 
-        # Creating a label widget with text 'Ich suche...'
-        title_label = QLabel('Ich suche...', central_widget)
+        layout = QVBoxLayout(central_widget)
 
-        layout = QFormLayout(central_widget)
-        layout.addRow(title_label)
+        title_label = QLabel('Ich suche...')
+        layout.addWidget(title_label)
+
+        form_layout = QFormLayout()
+        form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft) # Align labels to the left
+        form_layout.setFormAlignment(Qt.AlignmentFlag.AlignLeft) # Align form items to the left
+
         # Add a line edit widget for SMILES
         self.smiles_field = QLineEdit()
-        layout.addRow('SMILES', self.smiles_field)
+        self.smiles_field.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        form_layout.addRow('SMILES', self.smiles_field)
+
         # Add a line edit widget for Formel
         self.formel_field = QLineEdit()
-        layout.addRow('Formel', self.formel_field)
+        self.formel_field.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        form_layout.addRow('Formel', self.formel_field)
+
         # Add a line edit widget for Masse
         self.mass_field = QLineEdit()
-        layout.addRow('Masse', self.mass_field)
+        self.mass_field.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        form_layout.addRow('Masse', self.mass_field)
 
-        search_button = QPushButton('Suchen', central_widget)
-        clear_button = QPushButton('Löschen', central_widget)
+        layout.addLayout(form_layout)
+
+        button_layout = QHBoxLayout()
+        search_button = QPushButton('Suchen')
+        clear_button = QPushButton('Löschen')
+        button_layout.addWidget(search_button)
+        button_layout.addWidget(clear_button)
+        layout.addLayout(button_layout)
+
+        self.result_number = QLabel()  # QLabel to display the number of search results
+        layout.addWidget(self.result_number)
+
+        # Scroll area to hold the search results
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.results_container = QWidget()
+        self.results_layout = QVBoxLayout(self.results_container)
+        self.scroll_area.setWidget(self.results_container)
+        layout.addWidget(self.scroll_area)
+
         # Connect search button to on_button_click method
         search_button.clicked.connect(self.on_button_click)
         # Connect clear button to clear_fields method
         clear_button.clicked.connect(self.clear_fields)
-        layout.addRow(search_button, clear_button)
-        layout.addWidget(self.result_label)
-        self.result_number = QTextEdit() # Create a QTextEdit widget to display the number of search results
-        self.result_text = QTextEdit()  # Create a QTextEdit widget to display a list of search results
-        layout.addWidget(self.result_number)
-
-        # Create buttons for additional information about found substances
-        info_button = QPushButton('Info')
-        pdf_button = QPushButton('PDF')
-        # Create a widget to hold the buttons
-        button_widget = QWidget()
-        button_layout = QHBoxLayout(button_widget)
-        button_layout.addWidget(info_button)
-        button_layout.addWidget(pdf_button)
-        
-        # Add the widget with a list of search results and buttons 'info' and 'pdf' to the layout
-        layout.addRow(self.result_text, button_widget)
 
         # Connect returnPressed signal of QLineEdit fields to on_button_click method
         self.smiles_field.returnPressed.connect(self.on_button_click)
         self.formel_field.returnPressed.connect(self.on_button_click)
         self.mass_field.returnPressed.connect(self.on_button_click)
-   
-    #Function to handle the click event of the 'Suchen' button.
-    #It retrieves the text from the input fields, constructs a message, and sets it as the text of the result label.
+
     def on_button_click(self):
         smiles = self.smiles_field.text()
-        formel = (self.formel_field.text()).upper().strip() # Remove spaces at the beginning and end, all in uppercase
+        formel = (self.formel_field.text()).upper().strip()
         mass = self.mass_field.text()
 
-        # Validate if mass input is a float
-        # Convert mass to float if not empty
         if mass:
             try:
                 mass = float(mass)
             except ValueError:
-                # If not a float, display an error message and return
                 QMessageBox.critical(self, 'Fehler', 'Masse sollte eine Zahl sein.')
-                return  # Exit the function
+                return
         else:
-            mass = None  # Set mass to None if field is empty
+            mass = None
 
-        self.result_label.setText(f'Ich suche Substanzen mit SMILES {smiles}, Formel {formel} und Masse {mass}')
-        
         result = self.search_compound(smiles, formel, mass)
-        # Clear previous results
         self.result_number.clear()
-        self.result_text.clear()
+        # Clear previous results
+        for i in reversed(range(self.results_layout.count())): 
+            self.results_layout.itemAt(i).widget().setParent(None)
 
         if result:
-            # Display the number of found compounds
-            self.result_number.append(f"{len(result)} Substanz(en) mit SMILES {smiles}, Formel {formel} und Masse {mass} +-0.5 gefunden:\n")
-            # Display the details of found compounds
+            self.result_number.setText(f"{len(result)} Substanz(en) mit SMILES {smiles}, Formel {formel} und Masse {mass} +-0.5 gefunden:\n")
             for compound in result:
-                self.result_text.append(f"Name: {compound['names']} \nSMILES: {compound['smiles']}\nFormel: {compound['formula']}\nMasse: {compound['molecular_mass']}\n")
-                
+                result_widget = ResultWidget(compound)
+                self.results_layout.addWidget(result_widget)
         else:
-            # Display a message if no compounds were found
-            self.result_number.append(f"Keine Substanzen mit SMILES {smiles}, Formel {formel} und Masse {mass} +-0.5 gefunden.")
+            self.result_number.setText(f"Keine Substanzen mit SMILES {smiles}, Formel {formel} und Masse {mass} +-0.5 gefunden.")
 
-
-    # Function to handle the click event of the 'Löschen' button.
-    # It clears the text from all input fields and the result label.
     def clear_fields(self):
         self.smiles_field.clear()
         self.formel_field.clear()
         self.mass_field.clear()
-        self.result_label.clear()
         self.result_number.clear()
-        self.result_text.clear()
+        for i in reversed(range(self.results_layout.count())): 
+            self.results_layout.itemAt(i).widget().setParent(None)
 
-    # Searches for compounds in the JSON file
-    # Args: mass (float): The mass to search for.
-    # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
     def search_compound(self, smiles, formel, mass):
-        # Open the JSON file
         with open(data_json, encoding='utf-8') as f:
             compounds = json.load(f)
 
-        # Search for compounds with the given mass
-        if (mass is not None):
+        if mass is not None:
             if formel:
                 if smiles:
                     found_compounds_mass = self.search_compound_by_mass(compounds, mass)
@@ -143,17 +162,11 @@ class MainWindow(QMainWindow):
         else:
             return compounds
 
-    # Searches for compounds with the given mass within +-0.5 range.
-    # Args: compounds (list): A list of compounds to search within. mass (float): The mass to search for.
-    # Returns: list: A list of compounds with mass within +-0.5 of the given mass.
     def search_compound_by_mass(self, compounds, mass):
         found_compounds = []
         for compound in compounds:
-            # Check if compound has molecular_mass key
             if "molecular_mass" in compound:
-                # Check if mass is not None
                 if (compound["molecular_mass"] is not None) and (mass is not None):
-                    # Check molecular_mass +- 0.5
                     if (compound["molecular_mass"] >= (mass-0.5) and compound["molecular_mass"] <= (mass+0.5)):
                         found_compounds.append(compound)
         return found_compounds
@@ -173,7 +186,6 @@ class MainWindow(QMainWindow):
                 if ((compound["smiles"]) == smiles):
                     found_compounds.append(compound)
         return found_compounds
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
