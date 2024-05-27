@@ -72,7 +72,7 @@ def get_smiles() -> str:
 def get_names(splitted_text: list) -> list:
     # Erstes Element ist immer der Name als Überschrift
     names = []
-    bad_synonyms = ["uvmax", "n/a", "cfr" ]
+    bad_synonyms = ["uvmax", "n/a", "cfr", "available"]
     
     for i in range(3):
         if 'drug' not in splitted_text[i].lower():
@@ -80,6 +80,30 @@ def get_names(splitted_text: list) -> list:
                 names.append(splitted_text[i])
                 break
 
+    if 'latest' in names[0].lower():
+        string_parts = names[0].lower().split('latest')
+        string_parts.pop(1)
+        string_in_char_list = []
+        for char in string_parts[0]:
+            string_in_char_list.append(char)
+            
+        for i in range(len(string_in_char_list),0,-1):
+            if string_in_char_list[i-1] == ' ':
+                string_in_char_list.pop(i-1)
+            else:
+                break
+        
+        name_length = len(string_in_char_list)
+        
+        string_in_char_list = []
+        for i in range(0,name_length):
+            string_in_char_list.append(names[0][i])
+            
+        names[0] = ''.join(string_in_char_list)
+        
+        
+        
+        
     for i in range(len(splitted_text)):
         if "synonyms" in splitted_text[i].lower():
             if "cas" in splitted_text[i-1].lower():
@@ -139,26 +163,59 @@ def get_molecular_mass(splitted_text: list) -> float:
     return molecular_mass
 
 def get_cas_num(splitted_text: list) -> str: # READY
-    cas = ""
-    bad_keywords = ['schedul', '']
+    raw_cas = ""
+    out_cas = ''
+    
     for i in range(len(splitted_text)):
         if "cas" in splitted_text[i].lower():
             if "synonym" in splitted_text[i+1].lower():
                 if "source" in splitted_text[i+2].lower():
                     if "appearance" in splitted_text[i+3].lower():
                         if "uvmax" in splitted_text[i+4].lower():
-                            cas = splitted_text[i+5]                        
+                            raw_cas = splitted_text[i+5]                        
                         else:
-                            cas = splitted_text[i+4]
+                            raw_cas = splitted_text[i+4]
                     else:
-                        cas = splitted_text[i+3]  
+                        raw_cas = splitted_text[i+3]  
                 else:
-                    cas = splitted_text[i+2]
+                    raw_cas = splitted_text[i+2]
             elif "source" in splitted_text[i+1].lower():
-                cas = splitted_text[i+2]
+                raw_cas = splitted_text[i+2]
             else:
-                cas = splitted_text[i+1]
-    return cas
+                raw_cas = splitted_text[i+1]
+    
+    
+    first_num_at = 0
+    first_unsc_at = 0
+    second_unsc_at = 0 
+    last_num_at = 0
+    
+    for i in range(len(raw_cas)):
+        if first_unsc_at == 0:
+            if raw_cas[i] == '0' or raw_cas[i] == '1' or raw_cas[i] == '2' or raw_cas[i] == '3' or raw_cas[i] == '4' or raw_cas[i] == '5' or raw_cas[i] == '6' or raw_cas[i] == '7' or raw_cas[i] == '8' or raw_cas[i] == '9':
+                continue
+            elif raw_cas[i] == '-':
+                first_unsc_at = i
+                continue
+            else:    
+                first_num_at = i+1
+                
+        elif first_unsc_at != 0: 
+            if raw_cas[i] == '-':
+                second_unsc_at = i
+                continue
+        
+        if second_unsc_at != 0: 
+            if raw_cas[i] == '0' or raw_cas[i] == '1' or raw_cas[i] == '2' or raw_cas[i] == '3' or raw_cas[i] == '4' or raw_cas[i] == '5' or raw_cas[i] == '6' or raw_cas[i] == '7' or raw_cas[i] == '8' or raw_cas[i] == '9':
+                last_num_at = i+1
+                continue
+            else: 
+                break
+    
+    for i in range(first_num_at, last_num_at):
+        out_cas += raw_cas[i]
+    
+    return out_cas
 
 def get_categories() -> list:
     return [] 
@@ -215,9 +272,9 @@ def extract_to_json():
 if __name__ == "__main__":
     extract_to_json()
     
-    # pdf_test_path = '/Users/nathaniel/Development/Programmieren/Python/PrPr/webscraper-python/pdf-files/25D_NBOMe.pdf'
+    # pdf_test_path = '/Users/nathaniel/Development/Programmieren/Python/PrPr/webscraper-python/pdf-files/METHYLPHENIDATE.pdf'
     # print(pdf_to_string(pdf_test_path))
     # get_all_pdf_names()
     # for i in range(len(pdf_file_paths)):
-    #     if '25D_NBOMe.pdf' in pdf_file_paths[i]:
+    #     if 'METHYLPHENIDATE.pdf' in pdf_file_paths[i]:
     #         add_substance(pdf_test_path)
