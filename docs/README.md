@@ -13,13 +13,11 @@ Aufteilung:
 Installation: 
 libraries:
 
-pdf-download.py: os, requests, bs4, urllib.parse
+requests, 
+os, 
+bs4, 
+urllib.parse, 
+pyqt6, 
+PyPDF2
+pdfminer.six
 
-validation-data.py:  
-
-
-- pip3 install requests
-- pip3 install bs4
-- pip3 install pyqt6
-
-(pdf-extraction: - pip3 install PyMuPDF)
