@@ -19,14 +19,33 @@ json_file_path = "data.json"
 pdf_folder_path = "pdf-files"
 source_website = "swgdrugs"
 
+# Ensure PDF folder exists
+if not os.path.exists(pdf_folder_path):
+    logger.error(f"PDF folder does not exist: {pdf_folder_path}")
+    raise FileNotFoundError(f"PDF folder does not exist: {pdf_folder_path}")
+
 # Array with paths in string type 
 pdf_file_paths = []
+
+# Array with existing data
+already_existing_pdfs = []
 
 # get all existing pdf file names from pdf_folder
 def get_all_pdf_names() -> None:
     logger.info("Get all pdf names from pdf-folder")
+
+    # load content
+    with open(json_file_path, "r") as js:
+        content = json.load(js)
+
+    for chemical in content:
+        already_existing_pdfs.append(chemical.get("source")[1].split("/")[-1])
+
     for file in os.listdir(pdf_folder_path):
-        pdf_file_paths.append(os.path.join(pdf_folder_path, file))
+        if file.lower().endswith('.pdf'):
+            if file not in already_existing_pdfs:
+                pdf_file_paths.append(os.path.join(pdf_folder_path, file))
+
     logger.info("Get all pdf names READY")
 
 # create dictionary for inserting data into json-file 
@@ -48,7 +67,8 @@ def assign_var_to_dict(pdf: str) -> dict:
                    "deleted" : get_deleted_status(),
                    "last_modified" : get_last_modified(),
                    "details": {}
-               }
+                   }
+
     return return_dict
 
 # extract data from pdf to string 
@@ -140,7 +160,9 @@ def get_names(splitted_text: list) -> list:
                 if bad_synonym in names[i-1].lower():
                     names.pop(i-1)
 
-        names.split("/")
+
+    tmpnames = "/".join(names)
+    names = tmpnames.split("/")
     
     return names
 
@@ -155,7 +177,7 @@ def get_formula(splitted_text: list) -> str:
     formula = ""
     for i in range(len(splitted_text)):
         if "base" in splitted_text[i].casefold():
-            formula = splitted_text[i+1]
+            formula = splitted_text[i+1].replace(" ", "")
     return formula
 
 def get_inchi() -> str:
@@ -271,11 +293,23 @@ def add_substance(pdf):
 
     logger.info(f'Successfully appended to JSON: {tmp_pdf_name[-1]}')
 
+
 # ------ output function -------
 def extract_to_json():
     logger.info("Starting extraction of data")
+    # check for file and create new if no json file in directory
+    # insert array "[]"
+    if not os.path.isfile(json_file_path):
+        with open(json_file_path, "w") as js:
+            json.dump([], js)
+
     get_all_pdf_names()
+
     for pdf in pdf_file_paths:
-        add_substance(pdf)
-    #add_substance(pdf_file_paths[10])
+        try:
+            add_substance(pdf)
+        except:
+            continue
+
     logger.info("Finished extraction of data")
+

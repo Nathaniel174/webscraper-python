@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushBut
 from PyQt6.QtCore import Qt
 
 # JSON file
-data_json = 'test_data.json'
+data_json = 'data.json'
 
 class ResultWidget(QWidget):
     def __init__(self, compound):

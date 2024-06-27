@@ -75,7 +75,7 @@ def get_all_pdf_links():
             tmp_link = urljoin(url,link['href'])
 
             # Check if PDF is in "Monographs"-folder
-            if "Monographs" not in tmp_link:
+            if "/Monographs/" not in tmp_link:
                 continue
             # Check if Large_Logo PDF
             if "Large_Logo" in tmp_link:
