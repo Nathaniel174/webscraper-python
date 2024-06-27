@@ -1,13 +1,22 @@
 import json
 import os
-from os import path
 from datetime import datetime
 import re
 from pdfminer.high_level import extract_pages, extract_text
+import logging
+
+# Setup logging:
+#logging.basicConfig(level=logging.INFO, filename=os.path.join("logging", "logs.log"), filemode="a")
+logger = logging.getLogger("extraction_logger")
+hdlr = logging.FileHandler(os.path.join("logging", "extraction.log"))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
 
 # Init json file path and path for pdf_folder with existing pdfs:
 json_file_path = "data.json"
-pdf_folder_path = "/Users/nathaniel/Development/Programmieren/Python/PrPr/webscraper-python/pdf-files"
+pdf_folder_path = "pdf-files"
 source_website = "swgdrugs"
 
 # Array with paths in string type 
@@ -15,8 +24,10 @@ pdf_file_paths = []
 
 # get all existing pdf file names from pdf_folder
 def get_all_pdf_names() -> None:
+    logger.info("Get all pdf names from pdf-folder")
     for file in os.listdir(pdf_folder_path):
-        pdf_file_paths.append(pdf_folder_path + "/" + file)
+        pdf_file_paths.append(os.path.join(pdf_folder_path, file))
+    logger.info("Get all pdf names READY")
 
 # create dictionary for inserting data into json-file 
 def assign_var_to_dict(pdf: str) -> dict:
@@ -45,7 +56,7 @@ def pdf_to_string(pdf):
     # read PDF into text as string
     text = extract_text(pdf)
     if 'cid:0' in text:
-        text = text.replace('(cid:0)','')
+        text = text.replace('(cid:0)', '')
     splitted_text = text.split('\n')
     counter_blank = 0
     counter_space = 0
@@ -77,7 +88,7 @@ def get_names(splitted_text: list) -> list:
     for i in range(3):
         if 'drug' not in splitted_text[i].lower():
             if 'this' not in splitted_text[i].lower():
-                names.append(splitted_text[i])
+                names.append(splitted_text[i].replace(" ", ""))
                 break
 
     if 'latest' in names[0].lower():
@@ -110,24 +121,26 @@ def get_names(splitted_text: list) -> list:
                 if "source" in splitted_text[i+1].lower():
                     if 'appearance' in splitted_text[i+2].lower():
                         if 'uvmax' in splitted_text[i+3].lower():
-                            names.append(splitted_text[i+5])
+                            names.append(splitted_text[i+5].replace(" ", ""))
                         else:
-                            names.append(splitted_text[i+4])
+                            names.append(splitted_text[i+4].replace(" ", ""))
                     else:
-                        names.append(splitted_text[i+3])
+                        names.append(splitted_text[i+3].replace(" ", ""))
                 else:
-                    names.append(splitted_text[i+2])
+                    names.append(splitted_text[i+2].replace(" ", ""))
             else:
                 if "source" in splitted_text[i+1].lower():
-                    names.append(splitted_text[i+2])
+                    names.append(splitted_text[i+2].replace(" ", ""))
                 else:
-                    names.append(splitted_text[i+1])
+                    names.append(splitted_text[i+1].replace(" ", ""))
     
     if len(names) > 0: 
         for i in range(len(names)):
             for bad_synonym in bad_synonyms:
                 if bad_synonym in names[i-1].lower():
                     names.pop(i-1)
+
+        names.split("/")
     
     return names
 
@@ -135,11 +148,15 @@ def get_iupac(splitted_text: list) -> list:
     iupac = []
     for i in range(len(splitted_text)):
         if "iupac" in splitted_text[i].lower():
-            iupac.append(splitted_text[i+1])
+            iupac.append(splitted_text[i+1].replace(" ", ""))
     return iupac
 
 def get_formula(splitted_text: list) -> str:
-    return ""
+    formula = ""
+    for i in range(len(splitted_text)):
+        if "base" in splitted_text[i].casefold():
+            formula = splitted_text[i+1]
+    return formula
 
 def get_inchi() -> str:
     return ""
@@ -149,17 +166,13 @@ def get_inchi_key() -> str:
 
 def get_molecular_mass(splitted_text: list) -> float:
     molecular_mass = 0.0
-    # for phrase in splitted_text: 
-    #     if "base" in phrase.casefold():
-    #         tmp =  phrase.split(" ")
-    #         tmpNoSpaces = []
-    #         for element in tmp:
-    #             if "" != element:
-    #                 tmpNoSpaces.append(element)
-    #         if len(tmpNoSpaces) >= 2:
-    #             formula = tmpNoSpaces[1]
-    #             if len(tmpNoSpaces) >= 3:
-    #                 molecular_mass = tmpNoSpaces[2]
+
+    for i in range(len(splitted_text)):
+        if "base" in splitted_text[i].casefold():
+            tmp = splitted_text[i+2].replace(" ", ".", 1)
+            if tmp.isdigit():
+                molecular_mass = float(splitted_text[i+2])
+
     return molecular_mass
 
 def get_cas_num(splitted_text: list) -> str: # READY
@@ -223,7 +236,7 @@ def get_categories() -> list:
 def get_source(pdf) -> tuple: # READY
     tmp_pdf_name = pdf.split("/")
     source_url = "https://swgdrug.org/Monographs/" + tmp_pdf_name[-1]
-    return  (source_website, source_url)
+    return (source_website, source_url)
 
 def get_validation() -> bool:
     return False
@@ -236,17 +249,14 @@ def get_last_modified(): # CHECK: Website oder in json hinzugefügt?
     return current_dt
 
 # ------ add extracted data to json-file ------
-
 def add_substance(pdf):
-    
     tmp_pdf_name = pdf.split("/")
     
     # check for file and create new if no json file in directory
     # insert array "[]"
-    if path.isfile(json_file_path) == False:
+    if os.path.isfile(json_file_path) == False:
         with open(json_file_path, "w") as js: 
-            json.dump([], js) 
-            
+            json.dump([], js)
     
     # load content
     with open(json_file_path, "r") as js: 
@@ -258,23 +268,14 @@ def add_substance(pdf):
     # dump content 
     with open(json_file_path, "w") as outfile: 
         json.dump(content, outfile,  indent = 4, separators = (',',': '))
-    
-    print('Successfully appended to JSON: ', tmp_pdf_name[-1])    
 
+    logger.info(f'Successfully appended to JSON: {tmp_pdf_name[-1]}')
 
 # ------ output function -------
-
 def extract_to_json():
+    logger.info("Starting extraction of data")
     get_all_pdf_names()
     for pdf in pdf_file_paths:
         add_substance(pdf)
-        
-if __name__ == "__main__":
-    extract_to_json()
-    
-    # pdf_test_path = '/Users/nathaniel/Development/Programmieren/Python/PrPr/webscraper-python/pdf-files/METHYLPHENIDATE.pdf'
-    # print(pdf_to_string(pdf_test_path))
-    # get_all_pdf_names()
-    # for i in range(len(pdf_file_paths)):
-    #     if 'METHYLPHENIDATE.pdf' in pdf_file_paths[i]:
-    #         add_substance(pdf_test_path)
+    #add_substance(pdf_file_paths[10])
+    logger.info("Finished extraction of data")

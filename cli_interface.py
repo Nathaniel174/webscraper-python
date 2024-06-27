@@ -5,7 +5,7 @@ import os
 # from .scripts.pdf_download import *
 # from .scripts.data_extraction import *
 
-from scripts import pdf_download, data_extraction
+from scripts import pdf_download, data_extraction, data_validation
 
 class Cli_Interface(cmd.Cmd):
     intro = 'Welcome to the CLI Interface of our webscraper project. Type help or ? to list commands.\n'
@@ -16,11 +16,11 @@ class Cli_Interface(cmd.Cmd):
     def do_downloadAll(self, arg):
         pdf_download.download_all()
     
-    def do_downloadRandom(self, arg):
-        pdf_download.download_random(arg)
-    
     def do_addToJSON(self, arg):
         data_extraction.extract_to_json()
+
+    def do_valJSON(self, arg):
+        data_validation.validate_data()
     
     def do_deleteDATA(self, arg):
         delete()
