@@ -4,7 +4,6 @@ import os
 import logging
 
 # Setup logging:
-#logging.basicConfig(level=logging.INFO, filename=os.path.join("logging", "logs.log"), filemode="a")
 logger = logging.getLogger("validation_logger")
 hdlr = logging.FileHandler(os.path.join("logging", "validation.log"))
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -12,18 +11,18 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
-json_file = 'data.json'
+json_file_path = os.path.join("data", "output", "data.json")
 
 def validate_data():
     try:
         logger.info("Starting validation of data")
         print("Starting validation...")
-        with open(json_file) as file:
+        with open(json_file_path) as file:
             content = json.load(file)
 
         updated_content = get_data_from_api(content)
 
-        with open(json_file, 'w') as file:
+        with open(json_file_path, 'w') as file:
             json.dump(updated_content, file, ensure_ascii=False, indent=4)
         logger.info("Finished validation of data")
         print("Finished validation")

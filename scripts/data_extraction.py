@@ -15,8 +15,8 @@ logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
 # Init json file path and path for pdf_folder with existing pdfs:
-json_file_path = "data.json"
-pdf_folder_path = "pdf-files"
+json_file_path = os.path.join("data", "output", "data.json")
+pdf_folder_path = os.path.join("data", "pdf-files")
 source_website = "swgdrugs"
 
 # Ensure PDF folder exists

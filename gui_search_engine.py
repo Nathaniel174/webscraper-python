@@ -1,10 +1,14 @@
 import json
 import sys
+import os
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QPushButton, QLineEdit, QFormLayout, QMessageBox, QHBoxLayout, QVBoxLayout, QScrollArea, QSizePolicy
 from PyQt6.QtCore import Qt
 
-# JSON file
-data_json = 'data.json'
+
+
+# Paths
+json_file_path = os.path.join("data", "output", "data.json")
+pdf_folder_path = os.path.join("data", "pdf-files")
 
 class ResultWidget(QWidget):
     def __init__(self, compound):
@@ -131,7 +135,7 @@ class MainWindow(QMainWindow):
             self.results_layout.itemAt(i).widget().setParent(None)
 
     def search_compound(self, smiles, formel, mass):
-        with open(data_json, encoding='utf-8') as f:
+        with open(json_file_path, encoding='utf-8') as f:
             compounds = json.load(f)
 
         if mass is not None:

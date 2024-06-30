@@ -32,6 +32,10 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logger.setLevel(logging.INFO)
 
+# Paths
+json_file_path = os.path.join("data", "output", "data.json")
+pdf_folder_path = os.path.join("data", "pdf-files")
+
 # Create an Array with urls of every PDF 
 file_urls = []
 
@@ -50,7 +54,7 @@ def print_all_html_filelinks():
 # Get all already downloaded PDF-links from 'data.json'
 def init_all_downloaded_urls():
     try:
-        file = open('data.json')
+        file = open(json_file_path)
         data = json.load(file)
         for chemical in data:
             already_downloaded_urls.append(chemical['source'][1])
@@ -93,11 +97,10 @@ def get_all_pdf_links():
 
 def download_pdf_files(fileUrl):
     # Create folder pdf-files if there is no such folder
-    folder_location = r'pdf-files'
     
-    if not os.path.exists(folder_location):
+    if not os.path.exists(pdf_folder_path):
         logger.info("Creating pdf-folder")
-        os.mkdir(folder_location)
+        os.mkdir(pdf_folder_path)
 
     try:
         # Request URL and get response object
@@ -111,7 +114,7 @@ def download_pdf_files(fileUrl):
         if response.status_code == 200:
             logger.info("Check successful, starting download...")
             # Save in current working directory
-            filepath = os.path.join(folder_location, pdf_file_name)
+            filepath = os.path.join(pdf_folder_path, pdf_file_name)
             with open(filepath, 'wb') as pdf_object:
                 # save PDF file byte wise with '.content'
                 pdf_object.write(response.content)
