@@ -1,12 +1,10 @@
 import json
 import os
 from datetime import datetime
-import re
 from pdfminer.high_level import extract_pages, extract_text
 import logging
 
 # Setup logging:
-#logging.basicConfig(level=logging.INFO, filename=os.path.join("logging", "logs.log"), filemode="a")
 logger = logging.getLogger("extraction_logger")
 hdlr = logging.FileHandler(os.path.join("logging", "extraction.log"))
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -52,20 +50,20 @@ def get_all_pdf_names() -> None:
 def assign_var_to_dict(pdf: str) -> dict:
     pdf_text = pdf_to_string(pdf)
     # initialise dictionary with found information 
-    return_dict = {"version" : get_version(),
-                   "smiles" : get_smiles(),
-                   "names" : get_names(pdf_text),
-                   "iupac_names" : get_iupac(pdf_text),
-                   "formula" : get_formula(pdf_text),
-                   "inchi" : get_inchi(),
-                   "inchi_key" : get_inchi_key(),
-                   "molecular_mass" : get_molecular_mass(pdf_text),
-                   "cas_num" : get_cas_num(pdf_text),
-                   "categories" : get_categories(),
-                   "source" : get_source(pdf),
-                   "validated" : get_validation(),
-                   "deleted" : get_deleted_status(),
-                   "last_modified" : get_last_modified(),
+    return_dict = {"version": get_version(),
+                   "smiles": get_smiles(),
+                   "names": get_names(pdf_text),
+                   "iupac_names": get_iupac(pdf_text),
+                   "formula": get_formula(pdf_text),
+                   "inchi": get_inchi(),
+                   "inchi_key": get_inchi_key(),
+                   "molecular_mass": get_molecular_mass(pdf_text),
+                   "cas_num": get_cas_num(pdf_text),
+                   "categories": get_categories(),
+                   "source": get_source(pdf),
+                   "validated": get_validation(),
+                   "deleted": get_deleted_status(),
+                   "last_modified": get_last_modified(),
                    "details": {}
                    }
 
@@ -80,12 +78,15 @@ def pdf_to_string(pdf):
     splitted_text = text.split('\n')
     counter_blank = 0
     counter_space = 0
+
+    # count spaces and blanks
     for i in range(len(splitted_text)):
         if splitted_text[i] == '':
             counter_blank += 1     
         elif splitted_text[i] == ' ':
             counter_space += 1
-        
+
+    # remove spaces and blanks
     for i in range(counter_blank):
         splitted_text.remove('')
     for i in range(counter_space):
@@ -95,6 +96,7 @@ def pdf_to_string(pdf):
                                
 # ------ get functions ------  
 def get_version() -> str:
+    # Not in document
     return ""
 
 def get_smiles() -> str:
@@ -104,7 +106,9 @@ def get_names(splitted_text: list) -> list:
     # Erstes Element ist immer der Name als Überschrift
     names = []
     bad_synonyms = ["uvmax", "n/a", "cfr", "available"]
-    
+
+    # Get first name in heading
+    # filter for strings found in beginning
     for i in range(3):
         if 'drug' not in splitted_text[i].lower():
             if 'this' not in splitted_text[i].lower():
@@ -131,10 +135,8 @@ def get_names(splitted_text: list) -> list:
             string_in_char_list.append(names[0][i])
             
         names[0] = ''.join(string_in_char_list)
-        
-        
-        
-        
+
+    # get location of names
     for i in range(len(splitted_text)):
         if "synonyms" in splitted_text[i].lower():
             if "cas" in splitted_text[i-1].lower():
@@ -153,14 +155,15 @@ def get_names(splitted_text: list) -> list:
                     names.append(splitted_text[i+2].replace(" ", ""))
                 else:
                     names.append(splitted_text[i+1].replace(" ", ""))
-    
+
+    # filter bad synonyms
     if len(names) > 0: 
         for i in range(len(names)):
             for bad_synonym in bad_synonyms:
                 if bad_synonym in names[i-1].lower():
                     names.pop(i-1)
 
-
+    # filter "/" from names
     tmpnames = "/".join(names)
     names = tmpnames.split("/")
     
@@ -168,6 +171,7 @@ def get_names(splitted_text: list) -> list:
 
 def get_iupac(splitted_text: list) -> list:
     iupac = []
+    # first "string" after iupac heading is the iupac name
     for i in range(len(splitted_text)):
         if "iupac" in splitted_text[i].lower():
             iupac.append(splitted_text[i+1].replace(" ", ""))
@@ -175,20 +179,23 @@ def get_iupac(splitted_text: list) -> list:
 
 def get_formula(splitted_text: list) -> str:
     formula = ""
+    # first "string" after "base" heading is the formula
     for i in range(len(splitted_text)):
         if "base" in splitted_text[i].casefold():
             formula = splitted_text[i+1].replace(" ", "")
     return formula
 
 def get_inchi() -> str:
+    # Not in document
     return ""
 
 def get_inchi_key() -> str:
+    # Not in document
     return ""
 
 def get_molecular_mass(splitted_text: list) -> float:
     molecular_mass = 0.0
-
+    # second "string" after "base" heading is the molecular mass
     for i in range(len(splitted_text)):
         if "base" in splitted_text[i].casefold():
             tmp = splitted_text[i+2].replace(" ", ".", 1)
@@ -253,20 +260,26 @@ def get_cas_num(splitted_text: list) -> str: # READY
     return out_cas
 
 def get_categories() -> list:
+    # Not in document
     return [] 
 
-def get_source(pdf) -> tuple: # READY
+def get_source(pdf) -> tuple:
+    # Get Source of pdf as tuple
     tmp_pdf_name = pdf.split("/")
     source_url = "https://swgdrug.org/Monographs/" + tmp_pdf_name[-1]
     return (source_website, source_url)
 
 def get_validation() -> bool:
+    # Not in document
+    # validation starts later
     return False
 
-def get_deleted_status() -> bool: 
+def get_deleted_status() -> bool:
+    # Not in document
     return False
 
-def get_last_modified(): # CHECK: Website oder in json hinzugefügt?
+def get_last_modified():
+    # Get last modified / created
     current_dt = str(datetime.now())
     return current_dt
 

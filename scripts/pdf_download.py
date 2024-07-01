@@ -49,7 +49,7 @@ def print_all_html_filelinks():
     for url in file_urls: 
         i = i + 1
         print(i , ".: " , url)
-    print("Anzahl PDF-Links: ",len(file_urls))
+    print("Number of PDF-Links: ",len(file_urls))
 
 # Get all already downloaded PDF-links from 'data.json'
 def init_all_downloaded_urls():
@@ -93,7 +93,7 @@ def get_all_pdf_links():
             logger.warning("All PDFs already downloaded and initialized into data.json")
         logger.info(f"Anzahl PDF-Links: {len(file_urls)}")
     except:
-        logger.critical("Something went wrong during getting all pdflinks")
+        logger.critical("Something went wrong during 'getting all pdflinks'")
 
 def download_pdf_files(fileUrl):
     # Create folder pdf-files if there is no such folder
@@ -168,6 +168,7 @@ def download_all():
         for url in file_urls:
             if download_pdf_files(url) == True:
                 i += 1
+                print(f"Downloaded {url}")
             else:
                 logger.warning(f"This file could not be downloaded: {url}")
 
@@ -175,7 +176,7 @@ def download_all():
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
         logger.info(f"FINISHED DOWNLOAD at {date_time}")
         logger.info(f"Downloaded {i} files")
-        print("Downloaded ",i," files")
+        print(f"Downloaded {i} files")
         if((len(file_urls) - i) > 0):
             print(f"There are {len(file_urls)-i} PDFs that could not be downloaded. Check Download logs for more Information. ")
             logger.warning(f"{len(file_urls) - i} could NOT be downloaded")

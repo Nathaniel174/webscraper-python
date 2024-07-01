@@ -1,3 +1,4 @@
 data/pdf-files/*
-data/output/data.json
+data/output/*
+data/input/*
 logging/*

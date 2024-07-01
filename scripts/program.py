@@ -86,7 +86,7 @@ def delete():
         raise FileNotFoundError(f"PDF folder does not exist: {pdf_folder_path}")
     else:
         for file in os.listdir(pdf_folder_path):
-            os.remove(pdf_folder_path + file)
+            os.remove(os.path.join(pdf_folder_path, file))
             print(file + " successfully removed")
 
     if not os.path.exists(json_file_path):

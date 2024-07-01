@@ -22,9 +22,9 @@ class ResultWidget(QWidget):
         button_layout = QHBoxLayout()
         self.info_button = QPushButton('Info')
         self.pdf_button = QPushButton('PDF')
-        button_layout.addWidget(self.info_button)
-        button_layout.addWidget(self.pdf_button)
-        layout.addLayout(button_layout)
+        #button_layout.addWidget(self.info_button)
+        #button_layout.addWidget(self.pdf_button)
+        #layout.addLayout(button_layout)
 
         # Connect buttons to actions
         self.info_button.clicked.connect(self.show_info)
