@@ -19,50 +19,26 @@ Webscraper for pdf-data extraction from swgdrugs.com
 2. type parameter in input-fields 
 3. click "search"-button
 
-
-
 ## Installation: 
 
 ### required libraries:
 
-#### PDF download: 
-- requests
-- os
-- bs4
-- urllib.parse
-- urllib3
-- json
-- PyPDF2
+#### Preinstalled:
 - logging
 - datetime
-
-#### DATA extraction:
-- json 
-- os
-- datetime
-- pdfminer.six
-- datetime 
-- logging
-
-#### DATA validation:
-- requests
-- json 
 - os 
-- logging
-
-#### Program: 
-- os
-- time
-- logging
-
-#### CLI: 
+- json 
 - cmd
-
-#### GUI:
-- pyqt6
-- json
-- os
 - sys
+
+
+#### required to install
+- requests 
+- bs4
+- urllib3
+- PyPDF2
+- pdfminer.six 
+- pyqt6
 
 
 ## Aufteilung: 

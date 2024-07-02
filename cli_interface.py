@@ -11,13 +11,13 @@ class Cli_Interface(cmd.Cmd):
     prompt = '(webscraper) -> '
     file = None
     
-    # ------- basic dev commands -------
+    # ------- main dev commands -------
 
-    # start download from website
+    # start collecting data from website if not already added to .json-file
     def do_collect(self, arg):
         program.collect_data()
 
-    # add PDF Data to data.json
+    # delete all and start collecting data from website
     def do_recollect(self, arg):
         program.recollect_data()
 
@@ -29,6 +29,19 @@ class Cli_Interface(cmd.Cmd):
     def do_quit(self, arg):
         return True
 
+    # ------- additional dev commands -------
+
+    # start download from website
+    def do_download(self, arg):
+        program.download_pdf()
+
+    # add PDF Data to data.json
+    def do_extract(self, arg):
+        program.add_to_json()
+
+    # delete PDFs and data.json
+    def do_validate(self, arg):
+        program.validate_json_data()
 
 if __name__ == '__main__':
     Cli_Interface().cmdloop()
